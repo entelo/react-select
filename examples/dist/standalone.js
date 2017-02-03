@@ -234,7 +234,7 @@ var Async = (function (_Component) {
 			var props = {
 				noResultsText: this.noResultsText(),
 				placeholder: isLoading ? loadingPlaceholder : placeholder,
-				options: isLoading && loadingPlaceholder ? [] : options,
+				options: options,
 				ref: function ref(_ref) {
 					return _this3.select = _ref;
 				},
@@ -2093,8 +2093,8 @@ var Value = _react2['default'].createClass({
 				style: this.props.value.style,
 				title: this.props.value.title
 			},
-			this.renderRemoveIcon(),
-			this.renderLabel()
+			this.renderLabel(),
+			this.renderRemoveIcon()
 		);
 	}
 
