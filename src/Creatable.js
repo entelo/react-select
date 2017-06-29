@@ -140,8 +140,21 @@ const Creatable = createClass({
 				});
 
 				filteredOptions.push(this._createPlaceholderOption);
+			}
 
-				if (promptTextCreator2 && newOptionCreator2) {
+			if (newOptionCreator2 && promptTextCreator2) {
+				const option = newOptionCreator2({
+					label: this.inputValue,
+					labelKey: this.labelKey,
+					valueKey: this.valueKey
+				});
+
+				const isOptionUnique = this.isOptionUnique({
+					option,
+					options: excludeOptions.concat(filteredOptions)
+				});
+
+				if (isOptionUnique) {
 					var prompt2 = promptTextCreator2(this.inputValue);
 
 					this._createPlaceholderOption2 = newOptionCreator2({
