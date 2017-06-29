@@ -5,6 +5,8 @@ import Select from './Select';
 import defaultFilterOptions from './utils/defaultFilterOptions';
 import defaultMenuRenderer from './utils/defaultMenuRenderer';
 
+const RYANS_CONSTANT = 'this is very very important';
+
 const Creatable = createClass({
 	displayName: 'CreatableSelect',
 
@@ -32,6 +34,7 @@ const Creatable = createClass({
 	    // Factory to create new option.
 	    // ({ label: string, labelKey: string, valueKey: string }): Object
 		newOptionCreator: PropTypes.func,
+		newOptionCreator2: PropTypes.func,
 
 		// input change handler: function (inputValue) {}
 		onInputChange: PropTypes.func,
@@ -48,6 +51,7 @@ const Creatable = createClass({
 	    // Creates prompt/placeholder option text.
 	    // (filterText: string): string
 		promptTextCreator: PropTypes.func,
+		promptTextCreator2: PropTypes.func,
 
 		// Decides if a keyDown event (eg its `keyCode`) should result in the creation of a new option.
 		shouldKeyDownEventCreateNewOption: PropTypes.func,
@@ -74,17 +78,19 @@ const Creatable = createClass({
 		};
 	},
 
-	createNewOption () {
+	createNewOption (usePrimaryCreator = true) {
 		const {
 			isValidNewOption,
 			newOptionCreator,
+			newOptionCreator2,
 			onNewOptionClick,
 			options = [],
 			shouldKeyDownEventCreateNewOption
 		} = this.props;
+		const creator = usePrimaryCreator ? newOptionCreator : newOptionCreator2;
 
 		if (isValidNewOption({ label: this.inputValue })) {
-			const option = newOptionCreator({ label: this.inputValue, labelKey: this.labelKey, valueKey: this.valueKey });
+			const option = creator({ label: this.inputValue, labelKey: this.labelKey, valueKey: this.valueKey });
 			const isOptionUnique = this.isOptionUnique({ option });
 
 			// Don't add the same option twice.
@@ -101,7 +107,7 @@ const Creatable = createClass({
 	},
 
 	filterOptions (...params) {
-		const { filterOptions, isValidNewOption, options, promptTextCreator } = this.props;
+		const { filterOptions, isValidNewOption, options, promptTextCreator, promptTextCreator2 } = this.props;
 
 		// TRICKY Check currently selected options as well.
 		// Don't display a create-prompt for a value that's selected.
@@ -111,7 +117,7 @@ const Creatable = createClass({
 		const filteredOptions = filterOptions(...params) || [];
 
 		if (isValidNewOption({ label: this.inputValue })) {
-			const { newOptionCreator } = this.props;
+			const { newOptionCreator, newOptionCreator2 } = this.props;
 
 			const option = newOptionCreator({
 				label: this.inputValue,
@@ -135,7 +141,19 @@ const Creatable = createClass({
 					valueKey: this.valueKey
 				});
 
-				filteredOptions.unshift(this._createPlaceholderOption);
+				filteredOptions.push(this._createPlaceholderOption);
+
+				if (promptTextCreator2 && newOptionCreator2) {
+					var prompt2 = promptTextCreator2(this.inputValue);
+
+					this._createPlaceholderOption2 = newOptionCreator2({
+						label: prompt2,
+						labelKey: this.labelKey,
+						valueKey: this.valueKey
+					});
+
+					filteredOptions.push(this._createPlaceholderOption2);
+				}
 			}
 		}
 
@@ -185,7 +203,10 @@ const Creatable = createClass({
 
 		if (
 			focusedOption &&
-			focusedOption === this._createPlaceholderOption &&
+			(
+				focusedOption === this._createPlaceholderOption ||
+				(this._createPlaceholderOption2 && focusedOption === this._createPlaceholderOption2)
+			) &&
 			shouldKeyDownEventCreateNewOption({ keyCode: event.keyCode })
 		) {
 			this.createNewOption();
@@ -198,7 +219,10 @@ const Creatable = createClass({
 	},
 
 	onOptionSelect (option, event) {
-		if (option === this._createPlaceholderOption) {
+		if (
+			option === this._createPlaceholderOption ||
+			(this._createPlaceholderOption2 && option === this._createPlaceholderOption2)
+		) {
 			this.createNewOption();
 		} else {
 			this.select.selectValue(option);
@@ -210,6 +234,7 @@ const Creatable = createClass({
 	},
 
 	render () {
+		console.log(RYANS_CONSTANT);
 		const {
 			newOptionCreator,
 			shouldKeyDownEventCreateNewOption,
