@@ -599,7 +599,7 @@ var Creatable = (0, _createReactClass2['default'])({
 
 	onOptionSelect: function onOptionSelect(option, event) {
 		if (option === this._createPlaceholderOption || this._createPlaceholderOption2 && option === this._createPlaceholderOption2) {
-			this.createNewOption(this._createPlaceholderOption2 && focusedOption === this._createPlaceholderOption2);
+			this.createNewOption(this._createPlaceholderOption2 && option === this._createPlaceholderOption2);
 		} else {
 			this.select.selectValue(option);
 		}
