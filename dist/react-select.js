@@ -397,6 +397,7 @@ var Creatable = (0, _createReactClass2['default'])({
 		// Factory to create new option.
 		// ({ label: string, labelKey: string, valueKey: string }): Object
 		newOptionCreator: _propTypes2['default'].func,
+		newOptionCreator2: _propTypes2['default'].func,
 
 		// input change handler: function (inputValue) {}
 		onInputChange: _propTypes2['default'].func,
@@ -413,6 +414,7 @@ var Creatable = (0, _createReactClass2['default'])({
 		// Creates prompt/placeholder option text.
 		// (filterText: string): string
 		promptTextCreator: _propTypes2['default'].func,
+		promptTextCreator2: _propTypes2['default'].func,
 
 		// Decides if a keyDown event (eg its `keyCode`) should result in the creation of a new option.
 		shouldKeyDownEventCreateNewOption: _propTypes2['default'].func
@@ -440,16 +442,20 @@ var Creatable = (0, _createReactClass2['default'])({
 	},
 
 	createNewOption: function createNewOption() {
+		var useSecondaryCreator = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
 		var _props = this.props;
 		var isValidNewOption = _props.isValidNewOption;
 		var newOptionCreator = _props.newOptionCreator;
+		var newOptionCreator2 = _props.newOptionCreator2;
 		var onNewOptionClick = _props.onNewOptionClick;
 		var _props$options = _props.options;
 		var options = _props$options === undefined ? [] : _props$options;
 		var shouldKeyDownEventCreateNewOption = _props.shouldKeyDownEventCreateNewOption;
 
+		var creator = useSecondaryCreator ? newOptionCreator2 : newOptionCreator;
+
 		if (isValidNewOption({ label: this.inputValue })) {
-			var option = newOptionCreator({ label: this.inputValue, labelKey: this.labelKey, valueKey: this.valueKey });
+			var option = creator({ label: this.inputValue, labelKey: this.labelKey, valueKey: this.valueKey });
 			var _isOptionUnique = this.isOptionUnique({ option: option });
 
 			// Don't add the same option twice.
@@ -471,6 +477,7 @@ var Creatable = (0, _createReactClass2['default'])({
 		var isValidNewOption = _props2.isValidNewOption;
 		var options = _props2.options;
 		var promptTextCreator = _props2.promptTextCreator;
+		var promptTextCreator2 = _props2.promptTextCreator2;
 
 		// TRICKY Check currently selected options as well.
 		// Don't display a create-prompt for a value that's selected.
@@ -480,7 +487,9 @@ var Creatable = (0, _createReactClass2['default'])({
 		var filteredOptions = filterOptions.apply(undefined, arguments) || [];
 
 		if (isValidNewOption({ label: this.inputValue })) {
-			var _newOptionCreator = this.props.newOptionCreator;
+			var _props3 = this.props;
+			var _newOptionCreator = _props3.newOptionCreator;
+			var newOptionCreator2 = _props3.newOptionCreator2;
 
 			var option = _newOptionCreator({
 				label: this.inputValue,
@@ -504,7 +513,32 @@ var Creatable = (0, _createReactClass2['default'])({
 					valueKey: this.valueKey
 				});
 
-				filteredOptions.unshift(this._createPlaceholderOption);
+				filteredOptions.push(this._createPlaceholderOption);
+			}
+
+			if (newOptionCreator2 && promptTextCreator2) {
+				var _option = newOptionCreator2({
+					label: this.inputValue,
+					labelKey: this.labelKey,
+					valueKey: this.valueKey
+				});
+
+				var _isOptionUnique3 = this.isOptionUnique({
+					option: _option,
+					options: excludeOptions.concat(filteredOptions)
+				});
+
+				if (_isOptionUnique3) {
+					var prompt2 = promptTextCreator2(this.inputValue);
+
+					this._createPlaceholderOption2 = newOptionCreator2({
+						label: prompt2,
+						labelKey: this.labelKey,
+						valueKey: this.valueKey
+					});
+
+					filteredOptions.push(this._createPlaceholderOption2);
+				}
 			}
 		}
 
@@ -547,14 +581,14 @@ var Creatable = (0, _createReactClass2['default'])({
 	},
 
 	onInputKeyDown: function onInputKeyDown(event) {
-		var _props3 = this.props;
-		var shouldKeyDownEventCreateNewOption = _props3.shouldKeyDownEventCreateNewOption;
-		var onInputKeyDown = _props3.onInputKeyDown;
+		var _props4 = this.props;
+		var shouldKeyDownEventCreateNewOption = _props4.shouldKeyDownEventCreateNewOption;
+		var onInputKeyDown = _props4.onInputKeyDown;
 
 		var focusedOption = this.select.getFocusedOption();
 
-		if (focusedOption && focusedOption === this._createPlaceholderOption && shouldKeyDownEventCreateNewOption({ keyCode: event.keyCode })) {
-			this.createNewOption();
+		if (focusedOption && (focusedOption === this._createPlaceholderOption || this._createPlaceholderOption2 && focusedOption === this._createPlaceholderOption2) && shouldKeyDownEventCreateNewOption({ keyCode: event.keyCode })) {
+			this.createNewOption(this._createPlaceholderOption2 && focusedOption === this._createPlaceholderOption2);
 
 			// Prevent decorated Select from doing anything additional with this keyDown event
 			event.preventDefault();
@@ -564,8 +598,8 @@ var Creatable = (0, _createReactClass2['default'])({
 	},
 
 	onOptionSelect: function onOptionSelect(option, event) {
-		if (option === this._createPlaceholderOption) {
-			this.createNewOption();
+		if (option === this._createPlaceholderOption || this._createPlaceholderOption2 && option === this._createPlaceholderOption2) {
+			this.createNewOption(this._createPlaceholderOption2 && focusedOption === this._createPlaceholderOption2);
 		} else {
 			this.select.selectValue(option);
 		}
@@ -578,11 +612,11 @@ var Creatable = (0, _createReactClass2['default'])({
 	render: function render() {
 		var _this = this;
 
-		var _props4 = this.props;
-		var newOptionCreator = _props4.newOptionCreator;
-		var shouldKeyDownEventCreateNewOption = _props4.shouldKeyDownEventCreateNewOption;
+		var _props5 = this.props;
+		var newOptionCreator = _props5.newOptionCreator;
+		var shouldKeyDownEventCreateNewOption = _props5.shouldKeyDownEventCreateNewOption;
 
-		var restProps = _objectWithoutProperties(_props4, ['newOptionCreator', 'shouldKeyDownEventCreateNewOption']);
+		var restProps = _objectWithoutProperties(_props5, ['newOptionCreator', 'shouldKeyDownEventCreateNewOption']);
 
 		var children = this.props.children;
 

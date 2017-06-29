@@ -272,6 +272,18 @@ var _reactSelect = require('react-select');
 
 var _reactSelect2 = _interopRequireDefault(_reactSelect);
 
+function newOptionCreator(_ref) {
+	var label = _ref.label;
+	var labelKey = _ref.labelKey;
+	var valueKey = _ref.valueKey;
+
+	var option = {};
+	option[valueKey] = label;
+	option[labelKey] = label;
+	option.className = 'Select-create-option-placeholder';
+	return option;
+};
+
 var CreatableDemo = (0, _createReactClass2['default'])({
 	displayName: 'CreatableDemo',
 	propTypes: {
@@ -316,6 +328,14 @@ var CreatableDemo = (0, _createReactClass2['default'])({
 				multi: multi,
 				options: options,
 				onChange: this.handleOnChange,
+				newOptionCreator: newOptionCreator,
+				newOptionCreator2: newOptionCreator,
+				promptTextCreator: function (label) {
+					return 'New option form 1 ' + label;
+				},
+				promptTextCreator2: function (label) {
+					return 'New option form 2 ' + label;
+				},
 				value: multi ? multiValue : value
 			}),
 			_react2['default'].createElement(
