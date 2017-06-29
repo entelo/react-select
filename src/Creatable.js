@@ -234,7 +234,7 @@ const Creatable = createClass({
 			option === this._createPlaceholderOption ||
 			(this._createPlaceholderOption2 && option === this._createPlaceholderOption2)
 		) {
-			this.createNewOption(this._createPlaceholderOption2 && focusedOption === this._createPlaceholderOption2);
+			this.createNewOption(this._createPlaceholderOption2 && option === this._createPlaceholderOption2);
 		} else {
 			this.select.selectValue(option);
 		}
