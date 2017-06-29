@@ -5,8 +5,6 @@ import Select from './Select';
 import defaultFilterOptions from './utils/defaultFilterOptions';
 import defaultMenuRenderer from './utils/defaultMenuRenderer';
 
-const RYANS_CONSTANT = 'this is very very important';
-
 const Creatable = createClass({
 	displayName: 'CreatableSelect',
 
@@ -78,7 +76,7 @@ const Creatable = createClass({
 		};
 	},
 
-	createNewOption (usePrimaryCreator = true) {
+	createNewOption (useSecondaryCreator = false) {
 		const {
 			isValidNewOption,
 			newOptionCreator,
@@ -87,7 +85,7 @@ const Creatable = createClass({
 			options = [],
 			shouldKeyDownEventCreateNewOption
 		} = this.props;
-		const creator = usePrimaryCreator ? newOptionCreator : newOptionCreator2;
+		const creator = useSecondaryCreator ? newOptionCreator2 : newOptionCreator;
 
 		if (isValidNewOption({ label: this.inputValue })) {
 			const option = creator({ label: this.inputValue, labelKey: this.labelKey, valueKey: this.valueKey });
@@ -209,7 +207,7 @@ const Creatable = createClass({
 			) &&
 			shouldKeyDownEventCreateNewOption({ keyCode: event.keyCode })
 		) {
-			this.createNewOption();
+			this.createNewOption(this._createPlaceholderOption2 && focusedOption === this._createPlaceholderOption2);
 
 			// Prevent decorated Select from doing anything additional with this keyDown event
 			event.preventDefault();
@@ -223,7 +221,7 @@ const Creatable = createClass({
 			option === this._createPlaceholderOption ||
 			(this._createPlaceholderOption2 && option === this._createPlaceholderOption2)
 		) {
-			this.createNewOption();
+			this.createNewOption(this._createPlaceholderOption2 && focusedOption === this._createPlaceholderOption2);
 		} else {
 			this.select.selectValue(option);
 		}
@@ -234,7 +232,6 @@ const Creatable = createClass({
 	},
 
 	render () {
-		console.log(RYANS_CONSTANT);
 		const {
 			newOptionCreator,
 			shouldKeyDownEventCreateNewOption,
