@@ -3,6 +3,14 @@ import createClass from 'create-react-class';
 import PropTypes from 'prop-types';
 import Select from 'react-select';
 
+function newOptionCreator ({ label, labelKey, valueKey }) {
+	const option = {};
+	option[valueKey] = label;
+ 	option[labelKey] = label;
+ 	option.className = 'Select-create-option-placeholder';
+ 	return option;
+};
+
 var CreatableDemo = createClass({
 	displayName: 'CreatableDemo',
 	propTypes: {
@@ -38,6 +46,10 @@ var CreatableDemo = createClass({
 					multi={multi}
 					options={options}
 					onChange={this.handleOnChange}
+					newOptionCreator={newOptionCreator}
+					newOptionCreator2={newOptionCreator}
+					promptTextCreator={label => `New option form 1 ${label}`}
+					promptTextCreator2={label => `New option form 2 ${label}`}
 					value={multi ? multiValue : value}
 				/>
 				<div className="hint">{this.props.hint}</div>
