@@ -46,10 +46,10 @@ npm install react-select --save
 At this point you can import react-select and its styles in your application as follows:
 
 ```js
-import Select from 'react-select';
+import Select from '@entelo/react-select';
 
 // Be sure to include styles at some point, probably during your bootstrapping
-import 'react-select/dist/react-select.css';
+import 'react-select/dist/@entelo/react-select.css';
 ```
 
 You can also use the standalone build by including `react-select.js` and `react-select.css` in your page. (If you do this though you'll also need to include the dependencies.) For example:

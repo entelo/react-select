@@ -1,9 +1,9 @@
 {
-  "name": "react-select",
+  "name": "@entelo/react-select",
   "version": "1.0.1",
   "description": "A Select control built with and for ReactJS",
   "main": "lib/Select.js",
-  "style": "dist/react-select.min.css",
+  "style": "dist/@entelo/react-select.min.css",
   "author": "Jed Watson",
   "license": "MIT",
   "repository": {
